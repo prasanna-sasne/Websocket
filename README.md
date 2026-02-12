@@ -16,7 +16,8 @@ React Client <----WebSocket----> Node.js Server
 ## WebSocket Handshake
 When a client initiates a connection, the server responds with HTTP status 101 Switching Protocols, indicating the upgrade from HTTP to WebSocket.
 Handshake Diagram
-Client                            Server
+```
+ Client                            Server
   |                                 |
   | -- HTTP GET /websocket ------>  |   (Request to upgrade)
   |   Upgrade: websocket            |
@@ -29,6 +30,8 @@ Client                            Server
   |====== WebSocket Connection =====|
   |      Persistent TCP Link        |
   |      Real-time Messaging        |
+
+```
   
 Explanation:
 101 Switching Protocols: Server acknowledges the request and switches the connection from HTTP to WebSocket
