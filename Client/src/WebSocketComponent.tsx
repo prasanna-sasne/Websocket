@@ -1,22 +1,34 @@
 import { useEffect, useRef, useState } from 'react';
+import type { IMessage } from './models/message';
 
 const WebSocketComponent: React.FC = () => {
   const socketRef = useRef<WebSocket | null>(null);
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState<string>('');
-  
+
   useEffect(() => {
+    fetch("http://localhost:8000/messages")
+      .then((res) => res.json())
+      .then((data) => {
+        setMessages(data.map((m: IMessage) => m.message));
+      })
+      .catch((err) => console.error(err));
+
     socketRef.current = new WebSocket('ws://localhost:8000');
 
     socketRef.current.onopen = () => {
       console.log('Connected to server');
-      socketRef.current?.send('Hello from React');
+      socketRef.current?.send(JSON.stringify({ message: 'Hello from React' }));
     };
 
     socketRef.current.onmessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
-      console.log('Server says:', data);
-      setMessages((prev) => [...prev, data.message]);
+
+      if (data.type === "history") {
+        setMessages(data.messages.map((m: IMessage) => m.message));
+      } else if (data.type === "new_message") {
+        setMessages((prev) => [...prev, data.message.message]);
+      }
     };
 
     socketRef.current.onclose = () => {
