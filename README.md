@@ -36,3 +36,39 @@ Handshake Diagram
 Explanation:
 101 Switching Protocols: Server acknowledges the request and switches the connection from HTTP to WebSocket
 After this, the client and server communicate continuously over a single TCP connection without repeated HTTP requests
+
+## Running MongoDB with Docker
+#### Pull Mongo Image
+docker pull mongo
+
+#### Create network
+docker create network mongo_network
+
+#### Run MongoDB Container
+docker run -d \
+-p 27017:27017 \
+--name mongo \
+--network mongo_network \
+-e MONGO_INITDB_ROOT_USERNAME=admin \
+-e MONGO_INITDB_ROOT_PASSWORD=qwerty \
+mongo
+
+This will:
+Start MongoDB in a container
+Expose it on localhost:27017
+Create a root user (admin/qwerty)
+
+#### Check Collection from mongo-express
+docker run -d \
+-p 8081:8081 \
+--name mongo_express \
+--network mongo_network \
+-e ME_CONFIG_MONGODB_ADMINUSERNAME=admin \
+-e ME_CONFIG_MONGODB_ADMINPASSWORD=qwerty \
+-e ME_CONFIG_MONGODB_SERVER=mongo \
+mongo-express
+
+#### Check mongo-express is installed
+Go to browser http://localhost:8081/
+use standard username: admin and password: pass
+
